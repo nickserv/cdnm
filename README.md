@@ -1,0 +1,2 @@
+# cdnm
+CDN Manager
