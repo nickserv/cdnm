@@ -1,0 +1,19 @@
+{
+  "name": "cdnm",
+  "version": "1.0.0",
+  "description": "CDN Manager",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickmccurdy/cdnm.git"
+  },
+  "author": "Nick McCurdy <nick@nickmccurdy.com> (http://nickmccurdy.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nickmccurdy/cdnm/issues"
+  },
+  "homepage": "https://github.com/nickmccurdy/cdnm#readme"
+}
