@@ -1,4 +1,4 @@
-const { JSDOM } = require('jsdom')
+const { JSDOM: { fromFile } } = require('jsdom')
 const { URL } = require('url')
 
 /*
@@ -8,7 +8,7 @@ const { URL } = require('url')
 const URLFormat = /^\/((?:@[^\/@]+\/)?[^\/@]+)(?:@([^\/]+))?(\/.*)?$/
 
 exports.list = async path => {
-  const dom = await JSDOM.fromFile(path)
+  const dom = await fromFile(path)
   const nodes = [...dom.window.document.querySelectorAll('link[rel=stylesheet]')]
 
   return nodes.reduce((memo, node) => {
