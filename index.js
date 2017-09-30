@@ -9,8 +9,7 @@ const URLFormat = /^\/((?:@[^\/@]+\/)?[^\/@]+)(?:@([^\/]+))?(\/.*)?$/
 
 exports.list = path => {
   return JSDOM.fromFile(path).then(dom => {
-    const window = dom.window
-    const nodes = Array.from(window.document.querySelectorAll('link[rel=stylesheet]'))
+    const nodes = Array.from(dom.window.document.querySelectorAll('link[rel=stylesheet]'))
 
     return nodes.reduce((memo, node) => {
       const pathname = new URL(node.href).pathname
