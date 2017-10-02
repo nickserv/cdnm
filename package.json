@@ -2,6 +2,7 @@
   "name": "cdnm",
   "version": "1.0.0",
   "description": "CDN Manager",
+  "bin": "cli.js",
   "scripts": {
     "test": "jest"
   },
@@ -16,7 +17,8 @@
   },
   "homepage": "https://github.com/nickmccurdy/cdnm#readme",
   "dependencies": {
-    "jsdom": "^11.2.0",
+    "commander": "^2.11.0",
+    "jsdom": "^11.3.0",
     "npm-check-updates": "github:tjunnone/npm-check-updates"
   },
   "devDependencies": {
