@@ -1,4 +1,5 @@
 # cdnm (CDN Manager)
+[![npm version](https://badge.fury.io/js/cdnm.svg)](https://badge.fury.io/js/cdnm)
 [![Build Status](https://travis-ci.org/nickmccurdy/cdnm.svg?branch=master)](https://travis-ci.org/nickmccurdy/cdnm)
 
 Manage dependencies through CDN URLs in HTML files. Makes maintaining
@@ -9,14 +10,16 @@ with version constraints in existing HTML files. Useful for projects that depend
 on packages provided by CDNs which are backed by package managers like npm.
 
 ## Known Issues
-- Needs to be published on npm.
 - Currently limited to stylesheet links using [unpkg](https://unpkg.com). URLs
   must be in the form `unpkg.com/:package@:version/:file` for now (each section
   is mandatory).
 - HTML files will be reformatted by `cdnm update`. The full DOM structure and
   rendering should be preserved, but the source code will likely have line break
   or white space changes.
-- Requires Node 8 or newer.
+
+## Installation
+1. Install Node 8 or newer.
+2. `npm install --global cdnm`
 
 ## Example
 ```html
