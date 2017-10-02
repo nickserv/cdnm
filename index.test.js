@@ -1,5 +1,6 @@
 const cdnm = require('.')
 const fs = require('fs')
+const { JSDOM } = require('jsdom')
 const { promisify } = require('util')
 
 const file = 'fixture.html'
@@ -13,6 +14,18 @@ const pkg = {
 
 test('list', async() => {
   await expect(cdnm.list(file)).resolves.toEqual({ [pkg.name]: pkg.version })
+})
+
+test('updateLink', async () => {
+  const document = new JSDOM().window.document
+  const createLink = (name, version, file) => Object.assign(document.createElement('link'), {
+    href: `https://unpkg.com/${name}@${version}${file}`,
+    rel: 'stylesheet'
+  })
+
+  const link = createLink(pkg.name, pkg.version, pkg.file)
+  await cdnm.updateLink(link)
+  expect(link).toEqual(createLink(pkg.name, pkg.newVersion, pkg.file))
 })
 
 test('update', async () => {

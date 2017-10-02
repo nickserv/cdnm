@@ -14,7 +14,7 @@ const URLFormat = /^\/((?:@[^\/@]+\/)?[^\/@]+)(?:@([^\/]+))?(\/.*)?$/
 
 exports.list = async path => {
   const dom = await JSDOM.fromFile(path)
-  const links = dom.window.document.querySelectorAll('link[rel=stylesheet]')
+  const links = Array.from(dom.window.document.querySelectorAll('link[rel=stylesheet]'))
 
   return Array.from(links).reduce((memo, link) => {
     const pathname = new URL(link.href).pathname
@@ -24,17 +24,18 @@ exports.list = async path => {
   }, {})
 }
 
+exports.updateLink = async link => {
+  const url = new URL(link.href)
+  const [, name, version, file] = URLFormat.exec(url.pathname)
+  const newVersion = Object.values(await ncu.run({ packageData: JSON.stringify({ dependencies: { [name]: version } }) }))[0]
+  url.pathname = `/${name}@${newVersion}${file}`
+  link.href = url.toString()
+}
+
 exports.update = async path => {
   const dom = await JSDOM.fromFile(path)
-  const links = dom.window.document.querySelectorAll('link[rel=stylesheet]')
+  const links = Array.from(dom.window.document.querySelectorAll('link[rel=stylesheet]'))
 
-  for (const link of links) {
-    const url = new URL(link.href)
-    const [, name, version, file] = URLFormat.exec(url.pathname)
-    const newVersion = Object.values(await ncu.run({ packageData: JSON.stringify({ dependencies: { [name]: version } }) }))[0]
-    url.pathname = `/${name}@${newVersion}${file}`
-    link.href = url.toString()
-  }
-
+  await Promise.all(links.map(exports.updateLink))
   await writeFile(path, dom.serialize())
 }
