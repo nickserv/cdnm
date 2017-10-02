@@ -1,6 +1,6 @@
 {
   "name": "cdnm",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CDN Manager",
   "bin": "cli.js",
   "scripts": {
