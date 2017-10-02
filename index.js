@@ -1,6 +1,6 @@
 const fs = require('fs')
-const { JSDOM: { fromFile} } = require('jsdom')
-const { run } = require('npm-check-updates')
+const { JSDOM } = require('jsdom')
+const ncu = require('npm-check-updates')
 const { promisify } = require('util')
 const { URL } = require('url')
 
@@ -13,7 +13,7 @@ const writeFile = promisify(fs.writeFile)
 const URLFormat = /^\/((?:@[^\/@]+\/)?[^\/@]+)(?:@([^\/]+))?(\/.*)?$/
 
 exports.list = async path => {
-  const dom = await fromFile(path)
+  const dom = await JSDOM.fromFile(path)
   const links = dom.window.document.querySelectorAll('link[rel=stylesheet]')
 
   return Array.from(links).reduce((memo, link) => {
@@ -25,13 +25,13 @@ exports.list = async path => {
 }
 
 exports.update = async path => {
-  const dom = await fromFile(path)
+  const dom = await JSDOM.fromFile(path)
   const links = dom.window.document.querySelectorAll('link[rel=stylesheet]')
 
   for (const link of links) {
     const url = new URL(link.href)
     const [, name, version, file] = URLFormat.exec(url.pathname)
-    const newVersion = Object.values(await run({ packageData: JSON.stringify({ dependencies: { [name]: version } }) }))[0]
+    const newVersion = Object.values(await ncu.run({ packageData: JSON.stringify({ dependencies: { [name]: version } }) }))[0]
     url.pathname = `/${name}@${newVersion}${file}`
     link.href = url.toString()
   }
