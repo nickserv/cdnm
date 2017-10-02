@@ -24,8 +24,8 @@ test('updateLink', async () => {
   })
 
   const link = createLink(pkg.name, pkg.version, pkg.file)
-  await cdnm.updateLink(link)
-  expect(link).toEqual(createLink(pkg.name, pkg.newVersion, pkg.file))
+  const newLink = createLink(pkg.name, pkg.newVersion, pkg.file)
+  await expect(cdnm.updateLink(link)).resolves.toEqual(newLink)
 })
 
 test('update', async () => {
@@ -44,7 +44,7 @@ test('update', async () => {
   const fileTmp = 'fixture_tmp.html'
 
   await copyFile(file, fileTmp)
-  await cdnm.update(fileTmp)
+  await expect(cdnm.update(fileTmp)).resolves.toBe(undefined)
   const expected = (await readHTML(file)).replace(pkg.version, pkg.newVersion)
   await expect(readHTML(fileTmp)).resolves.toEqual(expected)
   await unlink(fileTmp)

@@ -30,6 +30,7 @@ exports.updateLink = async link => {
   const newVersion = Object.values(await ncu.run({ packageData: JSON.stringify({ dependencies: { [name]: version } }) }))[0]
   url.pathname = `/${name}@${newVersion}${file}`
   link.href = url.toString()
+  return link
 }
 
 exports.update = async path => {
