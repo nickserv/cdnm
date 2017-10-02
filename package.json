@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "CDN Manager",
   "scripts": {
-    "test": "jasmine"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "jsdom": "^11.2.0"
   },
   "devDependencies": {
-    "jasmine": "^2.8.0"
+    "jest": "^21.2.1"
   },
   "engines": {
     "node": ">=8"
