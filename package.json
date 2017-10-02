@@ -4,6 +4,7 @@
   "description": "CDN Manager",
   "bin": "cli.js",
   "scripts": {
+    "pretest": "eslint .",
     "test": "jest"
   },
   "repository": {
@@ -22,10 +23,25 @@
     "npm-check-updates": "^2.13.0"
   },
   "devDependencies": {
+    "eslint": "^4.8.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "jest": "^21.2.1"
   },
   "engines": {
     "node": ">=8"
+  },
+  "eslintConfig": {
+    "extends": "standard",
+    "overrides": {
+      "files": "*.test.js",
+      "env": {
+        "jest": true
+      }
+    }
   },
   "jest": {
     "testEnvironment": "node"

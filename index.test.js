@@ -12,7 +12,7 @@ const pkg = {
   file: '/index.js'
 }
 
-test('list', async() => {
+test('list', async () => {
   await expect(cdnm.list(file)).resolves.toEqual({ [pkg.name]: pkg.version })
 })
 
