@@ -9,10 +9,10 @@ const URLFormat = /^\/((?:@[^\/@]+\/)?[^\/@]+)(?:@([^\/]+))?(\/.*)?$/
 
 exports.list = async path => {
   const dom = await fromFile(path)
-  const nodes = [...dom.window.document.querySelectorAll('link[rel=stylesheet]')]
+  const links = [...dom.window.document.querySelectorAll('link[rel=stylesheet]')]
 
-  return nodes.reduce((memo, node) => {
-    const pathname = new URL(node.href).pathname
+  return links.reduce((memo, link) => {
+    const pathname = new URL(link.href).pathname
     const [name, version] = URLFormat.exec(pathname).slice(1)
 
     return { ...memo, [name]: version }
