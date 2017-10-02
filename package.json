@@ -16,7 +16,8 @@
   },
   "homepage": "https://github.com/nickmccurdy/cdnm#readme",
   "dependencies": {
-    "jsdom": "^11.2.0"
+    "jsdom": "^11.2.0",
+    "npm-check-updates": "github:tjunnone/npm-check-updates"
   },
   "devDependencies": {
     "jest": "^21.2.1"
