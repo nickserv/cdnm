@@ -16,18 +16,6 @@ test('list', async () => {
   await expect(cdnm.list(file)).resolves.toEqual({ [pkg.name]: pkg.version })
 })
 
-test('updateLink', async () => {
-  const document = new JSDOM().window.document
-  const createLink = (name, version, file) => Object.assign(document.createElement('link'), {
-    href: `https://unpkg.com/${name}@${version}${file}`,
-    rel: 'stylesheet'
-  })
-
-  const link = createLink(pkg.name, pkg.version, pkg.file)
-  const newLink = createLink(pkg.name, pkg.newVersion, pkg.file)
-  await expect(cdnm.updateLink(link)).resolves.toEqual(newLink)
-})
-
 test('update', async () => {
   const copyFile = promisify(fs.copyFile)
   const readFile = promisify(fs.readFile)
@@ -48,4 +36,16 @@ test('update', async () => {
   const expected = (await readHTML(file)).replace(pkg.version, pkg.newVersion)
   await expect(readHTML(fileTmp)).resolves.toEqual(expected)
   await unlink(fileTmp)
+})
+
+test('updateLink', async () => {
+  const document = new JSDOM().window.document
+  const createLink = (name, version, file) => Object.assign(document.createElement('link'), {
+    href: `https://unpkg.com/${name}@${version}${file}`,
+    rel: 'stylesheet'
+  })
+
+  const link = createLink(pkg.name, pkg.version, pkg.file)
+  const newLink = createLink(pkg.name, pkg.newVersion, pkg.file)
+  await expect(cdnm.updateLink(link)).resolves.toEqual(newLink)
 })

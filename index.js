@@ -24,6 +24,14 @@ exports.list = async path => {
   }, {})
 }
 
+exports.update = async path => {
+  const dom = await JSDOM.fromFile(path)
+  const links = Array.from(dom.window.document.querySelectorAll('link[rel=stylesheet]'))
+
+  await Promise.all(links.map(exports.updateLink))
+  await writeFile(path, dom.serialize())
+}
+
 exports.updateLink = async link => {
   const url = new URL(link.href)
   const [, name, version, file] = URLFormat.exec(url.pathname)
@@ -31,12 +39,4 @@ exports.updateLink = async link => {
   url.pathname = `/${name}@${newVersion}${file}`
   link.href = url.toString()
   return link
-}
-
-exports.update = async path => {
-  const dom = await JSDOM.fromFile(path)
-  const links = Array.from(dom.window.document.querySelectorAll('link[rel=stylesheet]'))
-
-  await Promise.all(links.map(exports.updateLink))
-  await writeFile(path, dom.serialize())
 }
