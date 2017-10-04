@@ -28,7 +28,7 @@ exports.list = async path => {
   return exports.findDependencies(dom).reduce((memo, dependency) => {
     const url = exports.createURL(dependency[exports.urlProperty(dependency)])
 
-    if (url) {
+    if (url && url.hostname === 'unpkg.com') {
       const [, name, version] = URLFormat.exec(url.pathname)
       return { ...memo, [name]: version }
     } else return memo

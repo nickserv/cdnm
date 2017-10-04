@@ -59,10 +59,34 @@ describe('updateDependency', () => {
     ).resolves.toEqual(createLink(newUnpkgURL))
   })
 
+  test('any link rel', async () => {
+    await expect(
+      cdnm.updateDependency(createElement('link', { href: unpkgURL, rel: 'invalid' }))
+    ).resolves.toEqual(createElement('link', { href: newUnpkgURL, rel: 'invalid' }))
+  })
+
   test('script', async () => {
     await expect(
       cdnm.updateDependency(createScript(unpkgURL))
     ).resolves.toEqual(createScript(newUnpkgURL))
+  })
+
+  test('absolute href', async () => {
+    await expect(
+      cdnm.updateDependency(createScript('https://example.com/index.js'))
+    ).resolves.toEqual(createScript('https://example.com/index.js'))
+  })
+
+  test('relative href', async () => {
+    await expect(
+      cdnm.updateDependency(createScript('index.js'))
+    ).resolves.toEqual(createScript('index.js'))
+  })
+
+  test('root relative href', async () => {
+    await expect(
+      cdnm.updateDependency(createScript('/index.js'))
+    ).resolves.toEqual(createScript('/index.js'))
   })
 })
 
