@@ -1,19 +1,33 @@
 const cdnm = require('.')
 const fs = require('fs')
 const { JSDOM } = require('jsdom')
+const { URL } = require('url')
 const { promisify } = require('util')
 
+const document = new JSDOM().window.document
+const createElement = (tagName, properties) => Object.assign(document.createElement(tagName), properties)
+const createLink = href => createElement('link', { href, rel: 'stylesheet' })
+const createScript = src => createElement('script', { src })
 const file = 'fixture.html'
+const name = 'juggernaut'
+const version = '2.1.0'
+const newVersion = '2.1.1'
+const unpkgURL = `https://unpkg.com/${name}@${version}/index.js`
+const newUnpkgURL = `https://unpkg.com/${name}@${newVersion}/index.js`
 
-const pkg = {
-  name: 'juggernaut',
-  version: '2.1.0',
-  newVersion: '2.1.1',
-  file: '/index.js'
-}
+test('createURL', () => {
+  expect(cdnm.createURL(unpkgURL)).toEqual(new URL(unpkgURL))
+  expect(cdnm.createURL('')).toBe(null)
+})
+
+test('findDependencies', async () => {
+  expect(
+    cdnm.findDependencies(await JSDOM.fromFile(file))
+  ).toEqual([createScript(unpkgURL)])
+})
 
 test('list', async () => {
-  await expect(cdnm.list(file)).resolves.toEqual({ [pkg.name]: pkg.version })
+  await expect(cdnm.list(file)).resolves.toEqual({ [name]: version })
 })
 
 test('update', async () => {
@@ -33,19 +47,31 @@ test('update', async () => {
 
   await copyFile(file, fileTmp)
   await expect(cdnm.update(fileTmp)).resolves.toBe(undefined)
-  const expected = (await readHTML(file)).replace(pkg.version, pkg.newVersion)
-  await expect(readHTML(fileTmp)).resolves.toEqual(expected)
+  const expected = (await readHTML(file)).replace(version, newVersion)
+  await expect(readHTML(fileTmp)).resolves.toBe(expected)
   await unlink(fileTmp)
 })
 
-test('updateLink', async () => {
-  const document = new JSDOM().window.document
-  const createLink = (name, version, file) => Object.assign(document.createElement('link'), {
-    href: `https://unpkg.com/${name}@${version}${file}`,
-    rel: 'stylesheet'
+describe('updateDependency', () => {
+  test('link', async () => {
+    await expect(
+      cdnm.updateDependency(createLink(unpkgURL))
+    ).resolves.toEqual(createLink(newUnpkgURL))
   })
 
-  const link = createLink(pkg.name, pkg.version, pkg.file)
-  const newLink = createLink(pkg.name, pkg.newVersion, pkg.file)
-  await expect(cdnm.updateLink(link)).resolves.toEqual(newLink)
+  test('script', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(unpkgURL))
+    ).resolves.toEqual(createScript(newUnpkgURL))
+  })
+})
+
+describe('urlProperty', () => {
+  test('link', () => {
+    expect(cdnm.urlProperty(createLink(unpkgURL))).toBe('href')
+  })
+
+  test('script', () => {
+    expect(cdnm.urlProperty(createScript(unpkgURL))).toBe('src')
+  })
 })
