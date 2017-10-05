@@ -53,6 +53,60 @@ test('update', async () => {
 })
 
 describe('updateDependency', () => {
+  test('script with fixed version', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@${version}/index.js`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@${newVersion}/index.js`))
+  })
+
+  test('script with latest version', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@${newVersion}/index.js`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@${newVersion}/index.js`))
+  })
+
+  test('script with semver range', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@^${newVersion}/index.js`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@^${newVersion}/index.js`))
+  })
+
+  test('script with tag', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@latest/index.js`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@latest/index.js`))
+  })
+
+  test('script without vesion', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}/index.js`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}/index.js`))
+  })
+
+  test('script without path', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@${version}`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@${newVersion}`))
+  })
+
+  test('script with trailing slash', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@${version}/`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@${newVersion}/`))
+  })
+
+  test('script for home page', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com`))
+    ).resolves.toEqual(createScript(`https://unpkg.com`))
+  })
+
+  test('script with query', async () => {
+    await expect(
+      cdnm.updateDependency(createScript(`https://unpkg.com/${name}@${version}/index.js?main=example`))
+    ).resolves.toEqual(createScript(`https://unpkg.com/${name}@${newVersion}/index.js?main=example`))
+  })
+
   test('link', async () => {
     await expect(
       cdnm.updateDependency(createLink(unpkgURL))
@@ -63,12 +117,6 @@ describe('updateDependency', () => {
     await expect(
       cdnm.updateDependency(createElement('link', { href: unpkgURL, rel: 'invalid' }))
     ).resolves.toEqual(createElement('link', { href: newUnpkgURL, rel: 'invalid' }))
-  })
-
-  test('script', async () => {
-    await expect(
-      cdnm.updateDependency(createScript(unpkgURL))
-    ).resolves.toEqual(createScript(newUnpkgURL))
   })
 
   test('absolute href', async () => {

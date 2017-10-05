@@ -28,7 +28,7 @@ exports.list = async path => {
   return exports.findDependencies(dom).reduce((memo, dependency) => {
     const url = exports.createURL(dependency[exports.urlProperty(dependency)])
 
-    if (url && url.hostname === 'unpkg.com') {
+    if (url && url.hostname === 'unpkg.com' && URLFormat.exec(url.pathname)) {
       const [, name, version] = URLFormat.exec(url.pathname)
       return { ...memo, [name]: version }
     } else return memo
@@ -44,10 +44,16 @@ exports.update = async path => {
 exports.updateDependency = async dependency => {
   const url = exports.createURL(dependency[exports.urlProperty(dependency)])
 
-  if (url && url.hostname === 'unpkg.com') {
+  if (url && url.hostname === 'unpkg.com' && URLFormat.exec(url.pathname)) {
     const [, name, version, file] = URLFormat.exec(url.pathname)
-    const newVersion = Object.values(await ncu.run({ packageData: JSON.stringify({ dependencies: { [name]: version } }) }))[0]
-    url.pathname = `/${name}@${newVersion}${file}`
+
+    const dependencies = (await ncu.run({
+      jsonAll: true,
+      packageData: JSON.stringify({ dependencies: { [name]: version } })
+    })).dependencies
+
+    const newVersion = Object.values(dependencies)[0]
+    url.pathname = `/${name !== undefined ? name : ''}${newVersion !== undefined ? '@' + newVersion : ''}${file !== undefined ? file : ''}`
     dependency[exports.urlProperty(dependency)] = url.toString()
   }
 
