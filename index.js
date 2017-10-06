@@ -1,9 +1,10 @@
 const fs = require('fs')
-const { JSDOM } = require('jsdom')
 const ncu = require('npm-check-updates')
+const { parse, serialize } = require('parse5')
 const { promisify } = require('util')
 const { URL } = require('url')
 
+const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
 
 /*
@@ -20,13 +21,22 @@ exports.createURL = url => {
   }
 }
 
-exports.findDependencies = dom => Array.from(dom.window.document.querySelectorAll('link, script'))
+exports.findDependencies = node => {
+  if (node.nodeName === 'link' || node.nodeName === 'script') {
+    return [node]
+  } else if (node.childNodes) {
+    return Array.prototype.concat.apply([], node.childNodes.map(exports.findDependencies))
+  } else {
+    return []
+  }
+}
 
 exports.list = async path => {
-  const dom = await JSDOM.fromFile(path)
+  const dom = parse(await readFile(path, 'utf8'))
 
   return exports.findDependencies(dom).reduce((memo, dependency) => {
-    const url = exports.createURL(dependency[exports.urlProperty(dependency)])
+    const property = dependency.attrs.find(attr => attr.name === exports.urlProperty(dependency))
+    const url = exports.createURL(property.value)
 
     if (url && url.hostname === 'unpkg.com' && URLFormat.exec(url.pathname)) {
       const [, name, version] = URLFormat.exec(url.pathname)
@@ -36,13 +46,14 @@ exports.list = async path => {
 }
 
 exports.update = async path => {
-  const dom = await JSDOM.fromFile(path)
+  const dom = parse(await readFile(path, 'utf8'))
   await Promise.all(exports.findDependencies(dom).map(exports.updateDependency))
-  await writeFile(path, dom.serialize())
+  await writeFile(path, serialize(dom))
 }
 
 exports.updateDependency = async dependency => {
-  const url = exports.createURL(dependency[exports.urlProperty(dependency)])
+  const property = dependency.attrs.find(attr => attr.name === exports.urlProperty(dependency))
+  const url = exports.createURL(property.value)
 
   if (url && url.hostname === 'unpkg.com' && URLFormat.exec(url.pathname)) {
     const [, name, version, file] = URLFormat.exec(url.pathname)
@@ -54,13 +65,10 @@ exports.updateDependency = async dependency => {
 
     const newVersion = Object.values(dependencies)[0]
     url.pathname = `/${name !== undefined ? name : ''}${newVersion !== undefined ? '@' + newVersion : ''}${file !== undefined ? file : ''}`
-    dependency[exports.urlProperty(dependency)] = url.toString()
+    property.value = url.toString()
   }
 
   return dependency
 }
 
-exports.urlProperty = element => {
-  if (element.tagName === 'LINK') return 'href'
-  else if (element.tagName === 'SCRIPT') return 'src'
-}
+exports.urlProperty = element => ({ link: 'href', script: 'src' }[element.nodeName])

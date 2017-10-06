@@ -1,14 +1,18 @@
 const cdnm = require('.')
 const fs = require('fs')
-const { JSDOM } = require('jsdom')
+const { parse, parseFragment, serialize } = require('parse5')
 const { URL } = require('url')
 const { promisify } = require('util')
 
-const document = new JSDOM().window.document
-const createElement = (tagName, properties) => Object.assign(document.createElement(tagName), properties)
-const createLink = href => createElement('link', { href, rel: 'stylesheet' })
-const createScript = src => createElement('script', { src })
+const copyFile = promisify(fs.copyFile)
+const readFile = promisify(fs.readFile)
+const unlink = promisify(fs.unlink)
+
+const parseNode = node => parseFragment(node).childNodes[0]
+const createLink = href => parseNode(`<link  href="${href}" rel="stylesheet">`)
+const createScript = src => parseNode(`<script src=${src}></script>`)
 const file = 'fixture.html'
+const fileTmp = 'fixture_tmp.html'
 const name = 'juggernaut'
 const version = '2.1.0'
 const newVersion = '2.1.1'
@@ -22,8 +26,8 @@ test('createURL', () => {
 
 test('findDependencies', async () => {
   expect(
-    cdnm.findDependencies(await JSDOM.fromFile(file))
-  ).toEqual([createScript(unpkgURL)])
+    cdnm.findDependencies(parse(await readFile(file, 'utf8'))).map(serialize)
+  ).toEqual([createScript(unpkgURL)].map(serialize))
 })
 
 test('list', async () => {
@@ -31,10 +35,6 @@ test('list', async () => {
 })
 
 test('update', async () => {
-  const copyFile = promisify(fs.copyFile)
-  const readFile = promisify(fs.readFile)
-  const unlink = promisify(fs.unlink)
-
   async function readHTML (file) {
     const contents = await readFile(file, 'utf8')
     return contents
@@ -42,8 +42,6 @@ test('update', async () => {
       .replace(/\n/g, '')
       .replace(/>\s+</g, '><')
   }
-
-  const fileTmp = 'fixture_tmp.html'
 
   await copyFile(file, fileTmp)
   await expect(cdnm.update(fileTmp)).resolves.toBe(undefined)
@@ -115,8 +113,8 @@ describe('updateDependency', () => {
 
   test('any link rel', async () => {
     await expect(
-      cdnm.updateDependency(createElement('link', { href: unpkgURL, rel: 'invalid' }))
-    ).resolves.toEqual(createElement('link', { href: newUnpkgURL, rel: 'invalid' }))
+      cdnm.updateDependency(parseNode(`<link href="${unpkgURL}" rel="invalid">`))
+    ).resolves.toEqual(parseNode(`<link href="${newUnpkgURL}" rel="invalid">`))
   })
 
   test('absolute href', async () => {
