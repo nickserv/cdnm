@@ -42,13 +42,13 @@ test('findDependencies', async () => {
   expect(serializeArray(cdnm.findDependencies(node))).toEqual(serializeArray([createScript(unpkgURL)]))
 })
 
-test('list', () => expect(cdnm.list(file)).resolves.toEqual({ [name]: version }))
+test('list', async () => expect(await cdnm.list(file)).toEqual({ [name]: version }))
 
 test('update', async () => {
   await copyFileAsync(file, fileTmp)
   await cdnm.update(fileTmp)
 
-  await expect(readHTML(fileTmp)).resolves.toBe(replaceVersion(await readHTML(file)))
+  expect(await readHTML(fileTmp)).toBe(replaceVersion(await readHTML(file)))
 
   await unlinkAsync(fileTmp)
 })
@@ -56,72 +56,72 @@ test('update', async () => {
 describe('updateDependency', () => {
   test('script with fixed version', async () => {
     const url = `https://unpkg.com/${name}@${version}/index.js`
-    await expect(cdnm.updateDependency(createScript(url))).resolves.toEqual(createScript(replaceVersion(url)))
+    expect(await cdnm.updateDependency(createScript(url))).toEqual(createScript(replaceVersion(url)))
   })
 
   test('script with latest version', async () => {
     const script = createScript(`https://unpkg.com/${name}@${newVersion}/index.js`)
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('script with semver range', async () => {
     const script = createScript(`https://unpkg.com/${name}@^${newVersion}/index.js`)
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('script with tag', async () => {
     const script = createScript(`https://unpkg.com/${name}@latest/index.js`)
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('script without vesion', async () => {
     const script = createScript(`https://unpkg.com/${name}/index.js`)
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('script without path', async () => {
     const url = `https://unpkg.com/${name}@${version}`
-    await expect(cdnm.updateDependency(createScript(url))).resolves.toEqual(createScript(replaceVersion(url)))
+    expect(await cdnm.updateDependency(createScript(url))).toEqual(createScript(replaceVersion(url)))
   })
 
   test('script with trailing slash', async () => {
     const url = `https://unpkg.com/${name}@${version}/`
-    await expect(cdnm.updateDependency(createScript(url))).resolves.toEqual(createScript(replaceVersion(url)))
+    expect(await cdnm.updateDependency(createScript(url))).toEqual(createScript(replaceVersion(url)))
   })
 
   test('script for home page', async () => {
     const script = createScript(`https://unpkg.com`)
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('script with query', async () => {
     const url = `https://unpkg.com/${name}@${version}/index.js?main=example`
-    await expect(cdnm.updateDependency(createScript(url))).resolves.toEqual(createScript(replaceVersion(url)))
+    expect(await cdnm.updateDependency(createScript(url))).toEqual(createScript(replaceVersion(url)))
   })
 
   test('link', async () => {
     const link = createLink(unpkgURL)
-    await expect(cdnm.updateDependency(link)).resolves.toEqual(link)
+    expect(await cdnm.updateDependency(link)).toEqual(link)
   })
 
   test('any link rel', async () => {
     const html = `<link href="${unpkgURL}" rel="invalid">`
-    await expect(cdnm.updateDependency(parseNode(html))).resolves.toEqual(parseNode(replaceVersion(html)))
+    expect(await cdnm.updateDependency(parseNode(html))).toEqual(parseNode(replaceVersion(html)))
   })
 
   test('absolute href', async () => {
     const script = createScript('https://example.com/index.js')
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('relative href', async () => {
     const script = createScript('index.js')
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 
   test('root relative href', async () => {
     const script = createScript('/index.js')
-    await expect(cdnm.updateDependency(script)).resolves.toEqual(script)
+    expect(await cdnm.updateDependency(script)).toEqual(script)
   })
 })
 
