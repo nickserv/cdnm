@@ -3,7 +3,7 @@
 const cdnm = require('.')
 const program = require('commander')
 const { readFileSync, writeFileSync } = require('fs')
-const { version } = require('./package')
+const { description, version } = require('./package')
 
 program
   .command('list <path>')
@@ -16,8 +16,8 @@ program
   .action(async path => writeFileSync(path, await cdnm.update(readFileSync(path, 'utf8'))))
 
 program
-  .description('CDN Manager')
+  .description(description)
   .version(version)
   .parse(process.argv)
 
-if (!program.args.length) program.help()
+program.args.length || program.help()
