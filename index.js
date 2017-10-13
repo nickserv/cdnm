@@ -1,11 +1,11 @@
-const fs = require('fs')
-const ncu = require('npm-check-updates')
+const { readFile, writeFile } = require('fs')
+const { run } = require('npm-check-updates')
 const { parse, serialize } = require('parse5')
-const { promisify } = require('util')
 const { URL } = require('url')
+const { promisify } = require('util')
 
-const readFile = promisify(fs.readFile)
-const writeFile = promisify(fs.writeFile)
+const readFileAsync = path => promisify(readFile)(path, 'utf8')
+const writeFileAsync = promisify(writeFile)
 
 /*
  * From https://github.com/unpkg/unpkg-website/blob/c49efe2de1fa4bd673999d607f0df73b374ba4e7/server/utils/parsePackageURL.js#L3
@@ -32,7 +32,7 @@ exports.findDependencies = node => {
 }
 
 exports.list = async path => {
-  const dom = parse(await readFile(path, 'utf8'))
+  const dom = parse(await readFileAsync(path))
 
   return exports.findDependencies(dom).reduce((memo, dependency) => {
     const property = dependency.attrs.find(attr => attr.name === exports.urlProperty(dependency))
@@ -46,9 +46,9 @@ exports.list = async path => {
 }
 
 exports.update = async path => {
-  const dom = parse(await readFile(path, 'utf8'))
+  const dom = parse(await readFileAsync(path))
   await Promise.all(exports.findDependencies(dom).map(exports.updateDependency))
-  await writeFile(path, serialize(dom))
+  await writeFileAsync(path, serialize(dom))
 }
 
 exports.updateDependency = async dependency => {
@@ -58,7 +58,7 @@ exports.updateDependency = async dependency => {
   if (url && url.hostname === 'unpkg.com' && URLFormat.exec(url.pathname)) {
     const [, name, version, file] = URLFormat.exec(url.pathname)
 
-    const dependencies = (await ncu.run({
+    const dependencies = (await run({
       jsonAll: true,
       packageData: JSON.stringify({ dependencies: { [name]: version } })
     })).dependencies

@@ -8,7 +8,7 @@ const { promisify } = require('util')
 const copyFileAsync = promisify(copyFile)
 const readFileAsync = path => promisify(readFile)(path, 'utf8')
 const readHTML = async file => (
-  (await readFileAsync(file, 'utf8'))
+  (await readFileAsync(file))
     .replace('DOCTYPE', 'doctype')
     .replace(/\n/g, '')
     .replace(/>\s+</g, '><')
