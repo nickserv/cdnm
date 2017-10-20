@@ -1,8 +1,8 @@
 const cdnm = require('.')
-const { readFileSync } = require('fs')
+const fs = require('fs')
 
 // Package metadata
-const html = readFileSync('fixture.html', 'utf8')
+const html = fs.readFileSync('fixture.html', 'utf8')
 const name = 'juggernaut'
 const version = '2.1.0'
 const newVersion = '2.1.1'
@@ -14,8 +14,8 @@ describe('list', () => {
 })
 
 describe('update', () => {
-  const expectToUpdate = url => async () => expect(await cdnm.update(url)).toBe(replaceVersion(url))
-  const expectNotToUpdate = url => async () => expect(await cdnm.update(url)).toBe(url)
+  const expectToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(replaceVersion(url))
+  const expectNotToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(url)
 
   test('empty string', expectNotToUpdate(''))
   test('complete html document', expectToUpdate(html))
