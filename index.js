@@ -1,6 +1,6 @@
 // Public API
 
-const { run } = require('npm-check-updates')
+const ncu = require('npm-check-updates')
 
 /*
    unpkg's URL format with a name, version (optional), and file (optional)
@@ -19,7 +19,13 @@ const URLFormat = /https?:\/\/unpkg.com\/((?:@[^/@]+\/)?[^/@]+)(?:@([^/]+))?(\/.
 exports.list = html =>
   (html.match(URLFormat) || [])
     .map(dependency => URLFormat.exec(dependency).slice(1)) // Extract capture groups
-    .reduce((memo, [name, version]) => ({ ...memo, [name]: version }), {}) // Build object from key/value pairs
+    .reduce((memo, dependency) => {
+      const name = dependency[0]
+      const version = dependency[1]
+
+      // Build object from key/value pairs
+      return Object.assign({}, memo, { [name]: version })
+    }, {})
 
 /*
    Returns a copy of an HTML String with its unpkg URL versions updated in
@@ -27,16 +33,15 @@ exports.list = html =>
    include the latest version of a package. Works similarly to the
    npm-check-updates package.
  */
-exports.update = async html => {
-  const { dependencies } = await run({
+exports.update = html =>
+  ncu.run({
     jsonAll: true,
     packageData: JSON.stringify({ dependencies: exports.list(html) })
-  })
+  }).then(dependencies =>
+    html.replace(URLFormat, (match, name, version, file) => {
+      const newVersion = dependencies.dependencies[name]
 
-  return html.replace(URLFormat, (match, name, version, file) => {
-    const newVersion = dependencies[name]
-
-    // Build the new package URL using HTTPS and leaving missing sections empty
-    return ['https://unpkg.com/', name, newVersion && '@', newVersion, file].join('')
-  })
-}
+      // Build the new package URL using HTTPS and leaving missing sections empty
+      return ['https://unpkg.com/', name, newVersion && '@', newVersion, file].join('')
+    })
+  )

@@ -18,7 +18,7 @@ on packages provided by CDNs which are backed by package managers like npm.
   or white space changes.
 
 ## Installation
-1. Install Node 8 or newer.
+1. Install Node 4 or newer.
 2. `npm install --global cdnm`
 
 ## Example
