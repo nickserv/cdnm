@@ -1,0 +1,16 @@
+{
+    "ignore": "*.test.js",
+    "plugins": [
+        "transform-object-rest-spread"
+    ],
+    "presets": [
+        [
+            "env",
+            {
+                "targets": {
+                    "node": 4
+                }
+            }
+        ]
+    ]
+}

@@ -2,9 +2,14 @@
   "name": "cdnm",
   "version": "1.0.2",
   "description": "CDN Manager",
-  "bin": "cli.js",
+  "files": [
+    "lib"
+  ],
+  "main": "lib",
+  "bin": "lib/cli.js",
   "scripts": {
-    "pretest": "eslint .",
+    "prepare": "babel *.js -d lib",
+    "pretest": "eslint *.js",
     "test": "jest"
   },
   "repository": {
@@ -22,6 +27,10 @@
     "npm-check-updates": "^2.13.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "eslint": "^4.8.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
@@ -43,6 +52,9 @@
     }
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
   }
 }
