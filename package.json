@@ -42,22 +42,6 @@
   "engines": {
     "node": ">=8"
   },
-  "babel": {
-    "ignore": "*.test.js",
-    "plugins": [
-      "transform-object-rest-spread"
-    ],
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": 4
-          }
-        }
-      ]
-    ]
-  },
   "eslintConfig": {
     "extends": "standard",
     "overrides": {
@@ -68,6 +52,9 @@
     }
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
   }
 }
