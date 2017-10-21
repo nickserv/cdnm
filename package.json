@@ -19,7 +19,8 @@
   "homepage": "https://github.com/nickmccurdy/cdnm#readme",
   "dependencies": {
     "commander": "^2.11.0",
-    "npm-check-updates": "^2.13.0"
+    "npm-check-updates": "^2.13.0",
+    "pify": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^4.8.0",
