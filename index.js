@@ -34,14 +34,16 @@ exports.list = html =>
    npm-check-updates package.
  */
 exports.update = html =>
-  ncu.run({
-    jsonAll: true,
-    packageData: JSON.stringify({ dependencies: exports.list(html) })
-  }).then(dependencies =>
-    html.replace(URLFormat, (match, name, version, file) => {
-      const newVersion = dependencies.dependencies[name]
-
-      // Build the new package URL using HTTPS and leaving missing sections empty
-      return ['https://unpkg.com/', name, newVersion && '@', newVersion, file].join('')
+  ncu
+    .run({
+      jsonAll: true,
+      packageData: JSON.stringify({ dependencies: exports.list(html) })
     })
-  )
+    .then(dependencies =>
+      html.replace(URLFormat, (match, name, version, file) => {
+        const newVersion = dependencies.dependencies[name]
+
+        // Build the new package URL using HTTPS and leaving missing sections empty
+        return ['https://unpkg.com/', name, newVersion && '@', newVersion, file].join('')
+      })
+    )
