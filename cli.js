@@ -11,12 +11,38 @@ const pkg = require('./package')
 program
   .command('list <path>')
   .description('list CDN dependencies in HTML file')
-  .action(path => console.log(cdnm.list(fs.readFileSync(path, 'utf8'))))
+  .action(path => {
+    const dependencies = cdnm.list(fs.readFileSync(path, 'utf8'))
+
+    // Print dependencies
+    Object.keys(dependencies).forEach(name => {
+      const version = dependencies[name]
+      console.log(`${name}@${version}`)
+    })
+  })
 
 program
   .command('update <path>')
   .description('update CDN dependencies in HTML file')
-  .action(path => cdnm.update(fs.readFileSync(path, 'utf8')).then(html => fs.writeFileSync(path, html)))
+  .action(path => {
+    const html = fs.readFileSync(path, 'utf8')
+
+    cdnm.update(html).then(newHtml => {
+      if (newHtml !== html) {
+        const dependencies = cdnm.list(html)
+        const newDependencies = cdnm.list(newHtml)
+
+        // Print updated dependencies
+        Object.keys(dependencies).forEach(name => {
+          const version = dependencies[name]
+          const newVersion = newDependencies[name]
+          newVersion !== version && console.log(`${name}@${version} → ${newVersion}`)
+        })
+
+        fs.writeFileSync(path, newHtml)
+      }
+    })
+  })
 
 // Setup and parsing
 program
