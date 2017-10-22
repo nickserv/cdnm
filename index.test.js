@@ -13,6 +13,7 @@ describe('list', () => {
   test('complete html document', () => expect(cdnm.list(html)).toEqual({ [name]: version }))
   test('tag', () => expect(cdnm.list(`https://unpkg.com/${name}@latest/index.js`)).toEqual({ [name]: 'latest' }))
   test('star', () => expect(cdnm.list(`https://unpkg.com/${name}@*/index.js`)).toEqual({ [name]: '*' }))
+  test('without version', () => expect(cdnm.list(`https://unpkg.com/${name}/index.js`)).toEqual({ [name]: '' }))
 })
 
 describe('update', () => {

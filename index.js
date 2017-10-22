@@ -24,7 +24,7 @@ exports.list = html =>
       const version = dependency[1]
 
       // Build object from key/value pairs
-      return Object.assign({}, memo, { [name]: version })
+      return Object.assign({}, memo, { [name]: version || '' })
     }, {})
 
 /*

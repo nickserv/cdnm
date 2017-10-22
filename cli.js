@@ -21,7 +21,7 @@ program
       // Print dependencies
       Object.keys(dependencies).forEach(name => {
         const version = dependencies[name]
-        console.log(`${name}@${version}`)
+        console.log(`${name}${version.length ? `@${version}` : ''}`)
       })
     })
   })
