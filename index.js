@@ -21,10 +21,10 @@ exports.list = html =>
     .map(dependency => RegExp(URLFormat).exec(dependency).slice(1)) // Extract capture groups
     .reduce((memo, dependency) => {
       const name = dependency[0]
-      const version = dependency[1]
+      const version = dependency[1] || ''
 
       // Build object from key/value pairs
-      return Object.assign({}, memo, { [name]: version || '' })
+      return Object.assign({}, memo, { [name]: version })
     }, {})
 
 /*
