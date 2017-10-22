@@ -11,6 +11,8 @@ const replaceVersion = string => string.replace(version, newVersion)
 describe('list', () => {
   test('empty string', () => expect(cdnm.list('')).toEqual({}))
   test('complete html document', () => expect(cdnm.list(html)).toEqual({ [name]: version }))
+  test('tag', () => expect(cdnm.list(`https://unpkg.com/${name}@latest/index.js`)).toEqual({ [name]: 'latest' }))
+  test('star', () => expect(cdnm.list(`https://unpkg.com/${name}@*/index.js`)).toEqual({ [name]: '*' }))
 })
 
 describe('update', () => {
@@ -23,6 +25,7 @@ describe('update', () => {
   test('latest version', expectNotToUpdate(`https://unpkg.com/${name}@${newVersion}/index.js`))
   test('semver range', expectNotToUpdate(`https://unpkg.com/${name}@^${newVersion}/index.js`))
   test('tag', expectNotToUpdate(`https://unpkg.com/${name}@latest/index.js`))
+  test('star', expectNotToUpdate(`https://unpkg.com/${name}@*/index.js`))
   test('without version', expectNotToUpdate(`https://unpkg.com/${name}/index.js`))
   test('without path', expectToUpdate(`https://unpkg.com/${name}@${version}`))
   test('trailing slash', expectToUpdate(`https://unpkg.com/${name}@${version}/`))
