@@ -23,7 +23,7 @@ describe('update', () => {
   test('latest version', expectNotToUpdate(`https://unpkg.com/${name}@${newVersion}/index.js`))
   test('semver range', expectNotToUpdate(`https://unpkg.com/${name}@^${newVersion}/index.js`))
   test('tag', expectNotToUpdate(`https://unpkg.com/${name}@latest/index.js`))
-  test('without vesion', expectNotToUpdate(`https://unpkg.com/${name}/index.js`))
+  test('without version', expectNotToUpdate(`https://unpkg.com/${name}/index.js`))
   test('without path', expectToUpdate(`https://unpkg.com/${name}@${version}`))
   test('trailing slash', expectToUpdate(`https://unpkg.com/${name}@${version}/`))
   test('home page', expectNotToUpdate('https://unpkg.com'))
