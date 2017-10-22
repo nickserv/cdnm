@@ -30,9 +30,9 @@ exports.list = html =>
     }, {})
 
 /*
-   Returns a copy of an HTML String with its unpkg URL versions updated in
-   place. Version ranges are maintained and only updated when they do not
-   include the latest version of a package. Works similarly to the
+   Returns a Promise of a copy of an HTML String with its unpkg URL versions
+   updated in place. Version ranges are maintained and only updated when they do
+   not include the latest version of a package. Works similarly to the
    npm-check-updates package.
  */
 exports.update = html =>
