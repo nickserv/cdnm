@@ -14,6 +14,7 @@ describe('list', () => {
   test('tag', () => expect(cdnm.list(`https://unpkg.com/${name}@latest/index.js`)).toEqual({ [name]: 'latest' }))
   test('star', () => expect(cdnm.list(`https://unpkg.com/${name}@*/index.js`)).toEqual({ [name]: '*' }))
   test('without version', () => expect(cdnm.list(`https://unpkg.com/${name}/index.js`)).toEqual({ [name]: '' }))
+  test('multiple versions', () => expect(() => cdnm.list(`https://unpkg.com/${name}/${version}\nhttps://unpkg.com/${name}/${newVersion}`)).toThrow(`cdnm: ${name} must not have multiple versions`))
 })
 
 describe('update', () => {
@@ -28,6 +29,7 @@ describe('update', () => {
   test('tag', expectNotToUpdate(`https://unpkg.com/${name}@latest/index.js`))
   test('star', expectNotToUpdate(`https://unpkg.com/${name}@*/index.js`))
   test('without version', expectNotToUpdate(`https://unpkg.com/${name}/index.js`))
+  test('multiple versions', () => expect(() => cdnm.update(`https://unpkg.com/${name}/${version}\nhttps://unpkg.com/${name}/${newVersion}`)).toThrow(`cdnm: ${name} must not have multiple versions`))
   test('without path', expectToUpdate(`https://unpkg.com/${name}@${version}`))
   test('trailing slash', expectToUpdate(`https://unpkg.com/${name}@${version}/`))
   test('home page', expectNotToUpdate('https://unpkg.com'))
