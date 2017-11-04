@@ -41,11 +41,11 @@ program
 
           // Print updated dependencies
           if (path) {
-          Object.keys(dependencies).forEach(name => {
-            const version = dependencies[name]
-            const newVersion = newDependencies[name]
-            newVersion !== version && console.log(`${name}@${version} → ${newVersion}`)
-          })
+            Object.keys(dependencies).forEach(name => {
+              const version = dependencies[name]
+              const newVersion = newDependencies[name]
+              newVersion !== version && console.log(`${name}@${version} → ${newVersion}`)
+            })
           }
 
           return path ? fs.writeFile(path, newHtml) : process.stdout.write(newHtml)
