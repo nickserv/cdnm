@@ -4,18 +4,21 @@
 const cdnm = require('.')
 const program = require('commander')
 const fsBase = require('fs')
+const getStdin = require('get-stdin')
 const pkg = require('./package')
 const pify = require('pify')
 
 const fs = pify(fsBase)
 
+const readHtml = path => path ? fs.readFile(path, 'utf8') : getStdin()
+
 // Commands
 
 program
-  .command('list <path>')
+  .command('list [path]')
   .description('list CDN dependencies in HTML file')
-  .action(path => {
-    fs.readFile(path, 'utf8').then(html => {
+  .action(path =>
+    readHtml(path).then(html => {
       const dependencies = cdnm.list(html)
 
       // Print dependencies
@@ -24,26 +27,28 @@ program
         console.log([name, version && '@', version].join(''))
       })
     })
-  })
+  )
 
 program
-  .command('update <path>')
+  .command('update [path]')
   .description('update CDN dependencies in HTML file')
   .action(path =>
-    fs.readFile(path, 'utf8').then(html =>
+    readHtml(path).then(html =>
       cdnm.update(html).then(newHtml => {
         if (newHtml !== html) {
           const dependencies = cdnm.list(html)
           const newDependencies = cdnm.list(newHtml)
 
           // Print updated dependencies
+          if (path) {
           Object.keys(dependencies).forEach(name => {
             const version = dependencies[name]
             const newVersion = newDependencies[name]
             newVersion !== version && console.log(`${name}@${version} → ${newVersion}`)
           })
+          }
 
-          return fs.writeFile(path, newHtml)
+          return path ? fs.writeFile(path, newHtml) : process.stdout.write(newHtml)
         }
       })
     )
