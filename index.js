@@ -7,7 +7,7 @@ const ncu = require('npm-check-updates')
    From https://github.com/unpkg/unpkg-website/blob/c49efe2de1fa4bd673999d607f0df73b374ba4e7/server/utils/parsePackageURL.js#L3
    TODO: wait until the unpkg project picks an open source license and mention it here
  */
-const URLFormat = 'https?://unpkg.com/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
+const urlFormat = 'https?://unpkg.com/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
 
 /*
    Returns an HTML String's npm dependencies as an Object of names and versions
@@ -17,8 +17,8 @@ const URLFormat = 'https?://unpkg.com/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
    stable version).
  */
 exports.list = html =>
-  (html.match(RegExp(URLFormat, 'g')) || [])
-    .map(dependency => RegExp(URLFormat).exec(dependency).slice(1)) // Extract capture groups
+  (html.match(RegExp(urlFormat, 'g')) || [])
+    .map(dependency => RegExp(urlFormat).exec(dependency).slice(1)) // Extract capture groups
     .reduce((memo, dependency) => {
       const name = dependency[0]
       const version = dependency[1] || ''
@@ -42,7 +42,7 @@ exports.update = html =>
       packageData: JSON.stringify({ dependencies: exports.list(html) })
     })
     .then(dependencies =>
-      html.replace(RegExp(URLFormat, 'g'), (match, name, version, file) => {
+      html.replace(RegExp(urlFormat, 'g'), (match, name, version, file) => {
         const newVersion = dependencies.dependencies[name]
 
         // Build the new package URL using HTTPS and leaving missing sections empty
