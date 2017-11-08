@@ -20,14 +20,14 @@ exports.list = html =>
   (html.match(RegExp(urlFormat, 'g')) || [])
     .map(dependency => RegExp(urlFormat).exec(dependency).slice(2)) // Extract capture groups
     .reduce((memo, dependency) => {
-    const name = dependency[0]
-    const version = dependency[1] || ''
+      const name = dependency[0]
+      const version = dependency[1] || ''
 
-    if (name in memo) throw new Error(`cdnm: ${name} must not have multiple versions`)
+      if (name in memo) throw new Error(`cdnm: ${name} must not have multiple versions`)
 
-    // Build object from key/value pairs
-    return Object.assign({}, memo, { [name]: version })
-  }, {})
+      // Build object from key/value pairs
+      return Object.assign({}, memo, { [name]: version })
+    }, {})
 
 /*
    Returns a Promise of a copy of an HTML String with its unpkg URL versions
@@ -43,9 +43,9 @@ exports.update = html =>
     })
     .then(dependencies =>
       html.replace(RegExp(urlFormat, 'g'), (match, base, name, version, file) => {
-          const newVersion = dependencies.dependencies[name]
+        const newVersion = dependencies.dependencies[name]
 
-          // Build the new package URL using HTTPS and leaving missing sections empty
+        // Build the new package URL using HTTPS and leaving missing sections empty
         return ['https://', base, '/', name, newVersion && '@', newVersion, file].join('')
       })
     )
