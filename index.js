@@ -3,20 +3,11 @@
 const ncu = require('npm-check-updates')
 
 /*
-   CDN path format with a name, version (optional), and file (optional)
-   From https://github.com/unpkg/unpkg-website/blob/c49efe2de1fa4bd673999d607f0df73b374ba4e7/server/utils/parsePackageURL.js#L3
+   CDN URL format with a base URL, name, version (optional), and file (optional)
+   Based on https://github.com/unpkg/unpkg-website/blob/c49efe2de1fa4bd673999d607f0df73b374ba4e7/server/utils/parsePackageURL.js#L3
    TODO: wait until the unpkg project picks an open source license and mention it here
  */
-const pathFormat = '/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
-
-/*
-   Base URLs for supported CDNs. HTTP and HTTPS protocols are implied with the
-   end of the URL matching pathFormat.
- */
-const urlFormats = [
-  'cdn.jsdelivr.net/npm',
-  'unpkg.com'
-]
+const urlFormat = 'https?://(cdn.jsdelivr.net/npm|unpkg.com)/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
 
 /*
    Returns an HTML String's npm dependencies as an Object of names and versions
@@ -26,13 +17,9 @@ const urlFormats = [
    stable version).
  */
 exports.list = html =>
-  Array.prototype.concat.apply(
-    [],
-    urlFormats.map(urlFormat =>
-      (html.match(RegExp('https?://' + urlFormat + pathFormat, 'g')) || [])
-        .map(dependency => RegExp('https?://' + urlFormat + pathFormat).exec(dependency).slice(1)) // Extract capture groups
-    )
-  ).reduce((memo, dependency) => {
+  (html.match(RegExp(urlFormat, 'g')) || [])
+    .map(dependency => RegExp(urlFormat).exec(dependency).slice(2)) // Extract capture groups
+    .reduce((memo, dependency) => {
     const name = dependency[0]
     const version = dependency[1] || ''
 
@@ -55,13 +42,10 @@ exports.update = html =>
       packageData: JSON.stringify({ dependencies: exports.list(html) })
     })
     .then(dependencies =>
-      urlFormats.reduce(
-        (memo, urlFormat) => memo.replace(RegExp('https?://' + urlFormat + pathFormat, 'g'), (match, name, version, file) => {
+      html.replace(RegExp(urlFormat, 'g'), (match, base, name, version, file) => {
           const newVersion = dependencies.dependencies[name]
 
           // Build the new package URL using HTTPS and leaving missing sections empty
-          return ['https://', urlFormat, '/', name, newVersion && '@', newVersion, file].join('')
-        }),
-        html
-      )
+        return ['https://', base, '/', name, newVersion && '@', newVersion, file].join('')
+      })
     )
