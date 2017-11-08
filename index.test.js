@@ -11,6 +11,7 @@ const replaceVersion = string => string.replace(version, newVersion)
 describe('list', () => {
   test('empty string', () => expect(cdnm.list('')).toEqual({}))
   test('complete html document', () => expect(cdnm.list(html)).toEqual({ [name]: version }))
+  test('jsDelivr', () => expect(cdnm.list(`https://cdn.jsdelivr.net/npm/${name}@${version}/index.js`)).toEqual({ [name]: version }))
   test('tag', () => expect(cdnm.list(`https://unpkg.com/${name}@latest/index.js`)).toEqual({ [name]: 'latest' }))
   test('star', () => expect(cdnm.list(`https://unpkg.com/${name}@*/index.js`)).toEqual({ [name]: '*' }))
   test('without version', () => expect(cdnm.list(`https://unpkg.com/${name}/index.js`)).toEqual({ [name]: '' }))
@@ -23,6 +24,7 @@ describe('update', () => {
 
   test('empty string', expectNotToUpdate(''))
   test('complete html document', expectToUpdate(html))
+  test('jsDelivr', expectToUpdate(`https://cdn.jsdelivr.net/npm/${name}@${version}/index.js`))
   test('fixed version', expectToUpdate(`https://unpkg.com/${name}@${version}/index.js`))
   test('latest version', expectNotToUpdate(`https://unpkg.com/${name}@${newVersion}/index.js`))
   test('semver range', expectNotToUpdate(`https://unpkg.com/${name}@^${newVersion}/index.js`))
