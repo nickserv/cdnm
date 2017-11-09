@@ -11,7 +11,7 @@ const urlFormat = 'https?://(cdn.jsdelivr.net/npm|unpkg.com)/((?:@[^/@]+/)?[^/@]
 
 /*
    Returns an HTML String's npm dependencies as an Object of names and versions
-   (Strings compatible with the semver package), extracted from unpkg URLs. The
+   (Strings compatible with the semver package), extracted from CDN URLs. The
    result is similar to the dependencies property of package.json. Versions may
    be undefined, representing a package's latest tag on npm (usually the latest
    stable version).
@@ -30,7 +30,7 @@ exports.list = html =>
     }, {})
 
 /*
-   Returns a Promise of a copy of an HTML String with its unpkg URL versions
+   Returns a Promise of a copy of an HTML String with its CDN URL versions
    updated in place. Version ranges are maintained and only updated when they do
    not include the latest version of a package. Works similarly to the
    npm-check-updates package.

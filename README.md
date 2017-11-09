@@ -9,7 +9,13 @@ commands like `npm ls` and `npm update` while automatically maintaining CDN URLs
 with version constraints in existing HTML files. Useful for projects that depend
 on packages provided by CDNs which are backed by package managers like npm.
 
-Currently limited to URLs for [unpkg](https://unpkg.com).
+## Supported CDNs
+Currently only npm-based CDNs are supported, though [other
+CDNs](https://github.com/nickmccurdy/cdnm/issues/4) are planned.
+
+- [unpkg](https://unpkg.com)
+- [jsDelivr for npm](https://www.jsdelivr.com/) (GitHub, WordPress, and combine
+  endpoints are unsupported)
 
 ## Installation
 1. Install Node 4 or newer.
@@ -56,6 +62,6 @@ Currently limited to URLs for [unpkg](https://unpkg.com).
 
   Commands:
 
-    list <path>    list CDN dependencies in HTML file
-    update <path>  update CDN dependencies in HTML file
+    list [path]    list CDN dependencies in HTML file or stdin
+    update [path]  update CDN dependencies in HTML file or stdin
 ```

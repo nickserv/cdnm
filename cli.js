@@ -16,7 +16,7 @@ const readHtml = path => path ? fs.readFile(path, 'utf8') : getStdin()
 
 program
   .command('list [path]')
-  .description('list CDN dependencies in HTML file')
+  .description('list CDN dependencies in HTML file or stdin')
   .action(path =>
     readHtml(path).then(html => {
       const dependencies = cdnm.list(html)
@@ -31,7 +31,7 @@ program
 
 program
   .command('update [path]')
-  .description('update CDN dependencies in HTML file')
+  .description('update CDN dependencies in HTML file or stdin')
   .action(path =>
     readHtml(path).then(html =>
       cdnm.update(html).then(newHtml => {
