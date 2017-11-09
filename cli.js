@@ -26,7 +26,7 @@ program
         const version = dependencies[name]
         console.log([name, version && '@', version].join(''))
       })
-    })
+    }).catch(console.error)
   )
 
 program
@@ -51,7 +51,7 @@ program
           return path ? fs.writeFile(path, newHtml) : process.stdout.write(newHtml)
         }
       })
-    )
+    ).catch(console.error)
   )
 
 // Setup and parsing
