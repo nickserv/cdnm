@@ -18,14 +18,29 @@ program
   .command('list [path]')
   .description('list CDN dependencies in HTML file or stdin')
   .action(path =>
-    readHtml(path).then(html => {
-      const dependencies = cdnm.list(html)
-
+    readHtml(path).then(cdnm.list).then(dependencies => {
       // Print dependencies
       Object.keys(dependencies).forEach(name => {
         const version = dependencies[name]
         console.log([name, version && '@', version].join(''))
       })
+    }).catch(console.error)
+  )
+
+program
+  .command('outdated [path]')
+  .description('list outdated CDN dependencies in HTML file or stdin')
+  .action(path =>
+    readHtml(path).then(cdnm.outdated).then(outdated => {
+      // Print outdated dependencies
+      Object.keys(outdated).forEach(name => {
+        const version = outdated[name][0]
+        const newVersion = outdated[name][1]
+        console.log(`${name}@${version} → ${newVersion}`)
+      })
+
+      // Set erroring exit code if dependencies are outdated
+      if (Object.keys(outdated).length) process.exit(1)
     }).catch(console.error)
   )
 

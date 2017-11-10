@@ -62,6 +62,7 @@ CDNs](https://github.com/nickmccurdy/cdnm/issues/4) are planned.
 
   Commands:
 
-    list [path]    list CDN dependencies in HTML file or stdin
-    update [path]  update CDN dependencies in HTML file or stdin
+    list [path]      list CDN dependencies in HTML file or stdin
+    outdated [path]  list outdated CDN dependencies in HTML file or stdin
+    update [path]    update CDN dependencies in HTML file or stdin
 ```
