@@ -24,6 +24,24 @@ describe('outdated', () => {
   test('outdated html document', () => expect(cdnm.outdated(html)).resolves.toEqual({ [name]: [version, newVersion] }))
 })
 
+describe('package', () => {
+  test('empty string', () =>
+    expect(cdnm.package('')).toEqual({
+      private: true,
+      dependencies: {}
+    })
+  )
+
+  test('complete html document', () =>
+    expect(cdnm.package(html)).toEqual({
+      private: true,
+      dependencies: {
+        [name]: version
+      }
+    })
+  )
+})
+
 describe('update', () => {
   const expectToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(replaceVersion(url))
   const expectNotToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(url)

@@ -64,5 +64,6 @@ CDNs](https://github.com/nickmccurdy/cdnm/issues/4) are planned.
 
     list [path]      list CDN dependencies in HTML file or stdin
     outdated [path]  list outdated CDN dependencies in HTML file or stdin
+    package [path]   write package.json file for CDN dependencies in HTML file or stdin
     update [path]    update CDN dependencies in HTML file or stdin
 ```

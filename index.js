@@ -51,6 +51,12 @@ exports.outdated = html =>
   })
 
 /*
+   Returns a package.json Object including npm dependencies extracted from CDN
+   URLs.
+ */
+exports.package = html => ({ private: true, dependencies: exports.list(html) })
+
+/*
    Returns a Promise of a copy of an HTML String with its CDN URL versions
    updated in place. Version ranges are maintained and only updated when they do
    not include the latest version of a package. Works similarly to the

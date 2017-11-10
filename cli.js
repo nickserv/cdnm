@@ -45,6 +45,17 @@ program
   )
 
 program
+  .command('package [path]')
+  .description('write package.json file for CDN dependencies in HTML file or stdin')
+  .action(path =>
+    readHtml(path).then(html => {
+      const pkg = JSON.stringify(cdnm.package(html), null, 2)
+
+      return fs.writeFile('package.json', pkg)
+    })
+  )
+
+program
   .command('update [path]')
   .description('update CDN dependencies in HTML file or stdin')
   .action(path =>
