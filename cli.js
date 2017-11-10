@@ -52,7 +52,7 @@ program
       const pkg = JSON.stringify(cdnm.package(html), null, 2)
 
       return fs.writeFile('package.json', pkg)
-    })
+    }).catch(console.error)
   )
 
 program
