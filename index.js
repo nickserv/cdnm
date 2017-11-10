@@ -30,6 +30,27 @@ exports.list = html =>
     }, {})
 
 /*
+   Returns a Promise of an Object of outdated dependencies. Keys are package
+   names and values are tuples of the old and new version Strings,
+   respectively. If there are no outdated dependencies, returns a Promise of an
+   empty Object. Respects and maintains version ranges as with the update
+   function.
+ */
+exports.outdated = html =>
+  exports.update(html).then(newHtml => {
+    const dependencies = exports.list(html)
+    const newDependencies = exports.list(newHtml)
+
+    // Build object of outdated dependencies
+    return Object.keys(dependencies).reduce((memo, name) => {
+      const version = dependencies[name]
+      const newVersion = newDependencies[name]
+
+      return newVersion === version ? memo : Object.assign({}, memo, { [name]: [version, newVersion] })
+    }, {})
+  })
+
+/*
    Returns a Promise of a copy of an HTML String with its CDN URL versions
    updated in place. Version ranges are maintained and only updated when they do
    not include the latest version of a package. Works similarly to the

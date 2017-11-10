@@ -18,6 +18,12 @@ describe('list', () => {
   test('multiple versions', () => expect(() => cdnm.list(`https://unpkg.com/${name}@${version}/index.js\nhttps://unpkg.com/${name}@${newVersion}/index.js`)).toThrow(`cdnm: ${name} must not have multiple versions, found ${version} and ${newVersion}`))
 })
 
+describe('outdated', () => {
+  test('empty string', () => expect(cdnm.outdated('')).resolves.toEqual({}))
+  test('up to date html document', () => expect(cdnm.outdated(replaceVersion(html))).resolves.toEqual({}))
+  test('outdated html document', () => expect(cdnm.outdated(html)).resolves.toEqual({ [name]: [version, newVersion] }))
+})
+
 describe('update', () => {
   const expectToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(replaceVersion(url))
   const expectNotToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(url)
