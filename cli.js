@@ -8,61 +8,76 @@ const pify = require('pify')
 const yargs = require('yargs')
 
 const fs = pify(fsBase)
-const noop = () => {}
 const readHtml = path => path ? fs.readFile(path, 'utf8') : getStdin()
 
 // eslint-disable-next-line no-unused-expressions
 yargs
   .usage('$0 <command> [path]')
-  .command('list [path]', 'list CDN dependencies', noop, argv => {
-    readHtml(argv.path).then(cdnm.list).then(dependencies => {
-      // Print dependencies
-      Object.keys(dependencies).forEach(name => {
-        const version = dependencies[name]
-        console.log([name, version && '@', version].join(''))
-      })
-    }).catch(console.error)
+  .command({
+    command: 'list [path]',
+    desc: 'list CDN dependencies',
+    handler: argv => {
+      readHtml(argv.path).then(cdnm.list).then(dependencies => {
+        // Print dependencies
+        Object.keys(dependencies).forEach(name => {
+          const version = dependencies[name]
+          console.log([name, version && '@', version].join(''))
+        })
+      }).catch(console.error)
+    }
   })
-  .command('outdated [path]', 'list outdated CDN dependencies in HTML file or stdin', noop, argv => {
-    readHtml(argv.path).then(cdnm.outdated).then(outdated => {
-      // Print outdated dependencies
-      Object.keys(outdated).forEach(name => {
-        const version = outdated[name][0]
-        const newVersion = outdated[name][1]
-        console.log(`${name}@${version} → ${newVersion}`)
-      })
+  .command({
+    command: 'outdated [path]',
+    desc: 'list outdated CDN dependencies in HTML file or stdin',
+    handler: argv => {
+      readHtml(argv.path).then(cdnm.outdated).then(outdated => {
+        // Print outdated dependencies
+        Object.keys(outdated).forEach(name => {
+          const version = outdated[name][0]
+          const newVersion = outdated[name][1]
+          console.log(`${name}@${version} → ${newVersion}`)
+        })
 
-      // Set erroring exit code if dependencies are outdated
-      if (Object.keys(outdated).length) process.exit(1)
-    }).catch(console.error)
+        // Set erroring exit code if dependencies are outdated
+        if (Object.keys(outdated).length) process.exit(1)
+      }).catch(console.error)
+    }
   })
-  .command('package [path]', 'write package.json file for CDN dependencies', noop, argv => {
-    readHtml(argv.path).then(html => {
-      const pkg = JSON.stringify(cdnm.package(html), null, 2)
+  .command({
+    command: 'package [path]',
+    desc: 'write package.json file for CDN dependencies',
+    handler: argv => {
+      readHtml(argv.path).then(html => {
+        const pkg = JSON.stringify(cdnm.package(html), null, 2)
 
-      return fs.writeFile('package.json', pkg)
-    }).catch(console.error)
+        return fs.writeFile('package.json', pkg)
+      }).catch(console.error)
+    }
   })
-  .command('update [path]', 'update CDN dependencies', noop, argv => {
-    readHtml(argv.path).then(html =>
-      cdnm.update(html).then(newHtml => {
-        if (newHtml !== html) {
-          const dependencies = cdnm.list(html)
-          const newDependencies = cdnm.list(newHtml)
+  .command({
+    command: 'update [path]',
+    desc: 'update CDN dependencies',
+    handler: argv => {
+      readHtml(argv.path).then(html =>
+        cdnm.update(html).then(newHtml => {
+          if (newHtml !== html) {
+            const dependencies = cdnm.list(html)
+            const newDependencies = cdnm.list(newHtml)
 
-          // Print updated dependencies
-          if (argv.path) {
-            Object.keys(dependencies).forEach(name => {
-              const version = dependencies[name]
-              const newVersion = newDependencies[name]
-              newVersion !== version && console.log(`${name}@${version} → ${newVersion}`)
-            })
+            // Print updated dependencies
+            if (argv.path) {
+              Object.keys(dependencies).forEach(name => {
+                const version = dependencies[name]
+                const newVersion = newDependencies[name]
+                newVersion !== version && console.log(`${name}@${version} → ${newVersion}`)
+              })
+            }
+
+            return argv.path ? fs.writeFile(argv.path, newHtml) : process.stdout.write(newHtml)
           }
-
-          return argv.path ? fs.writeFile(argv.path, newHtml) : process.stdout.write(newHtml)
-        }
-      })
-    ).catch(console.error)
+        })
+      ).catch(console.error)
+    }
   })
   .demandCommand()
   .argv
