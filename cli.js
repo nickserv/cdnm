@@ -16,7 +16,7 @@ const readHtml = path => path ? fs.readFile(path, 'utf8') : getStdin()
 
 program
   .command('list [path]')
-  .description('list CDN dependencies in HTML file or stdin')
+  .description('list dependencies')
   .action(path =>
     readHtml(path).then(cdnm.list).then(dependencies => {
       // Print dependencies
@@ -29,7 +29,7 @@ program
 
 program
   .command('outdated [path]')
-  .description('list outdated CDN dependencies in HTML file or stdin')
+  .description('list outdated dependencies')
   .action(path =>
     readHtml(path).then(cdnm.outdated).then(outdated => {
       // Print outdated dependencies
@@ -46,7 +46,7 @@ program
 
 program
   .command('package [path]')
-  .description('write package.json file for CDN dependencies in HTML file or stdin')
+  .description('write package.json file for dependencies')
   .action(path =>
     readHtml(path).then(html => {
       const pkg = JSON.stringify(cdnm.package(html), null, 2)
@@ -57,7 +57,7 @@ program
 
 program
   .command('update [path]')
-  .description('update CDN dependencies in HTML file or stdin')
+  .description('update dependencies')
   .action(path =>
     readHtml(path).then(html =>
       cdnm.update(html).then(newHtml => {
