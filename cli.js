@@ -2,36 +2,29 @@
 // Provides a CLI wrapper for each major function performing file IO
 
 const cdnm = require('.')
-const program = require('commander')
 const fsBase = require('fs')
 const getStdin = require('get-stdin')
-const pkg = require('./package')
 const pify = require('pify')
+const yargs = require('yargs')
 
 const fs = pify(fsBase)
-
+const noop = () => {}
 const readHtml = path => path ? fs.readFile(path, 'utf8') : getStdin()
 
-// Commands
-
-program
-  .command('list [path]')
-  .description('list CDN dependencies in HTML file or stdin')
-  .action(path =>
-    readHtml(path).then(cdnm.list).then(dependencies => {
+// eslint-disable-next-line no-unused-expressions
+yargs
+  .usage('$0 <command> [path]')
+  .command('list [path]', 'list CDN dependencies', noop, argv => {
+    readHtml(argv.path).then(cdnm.list).then(dependencies => {
       // Print dependencies
       Object.keys(dependencies).forEach(name => {
         const version = dependencies[name]
         console.log([name, version && '@', version].join(''))
       })
     }).catch(console.error)
-  )
-
-program
-  .command('outdated [path]')
-  .description('list outdated CDN dependencies in HTML file or stdin')
-  .action(path =>
-    readHtml(path).then(cdnm.outdated).then(outdated => {
+  })
+  .command('outdated [path]', 'list outdated CDN dependencies in HTML file or stdin', noop, argv => {
+    readHtml(argv.path).then(cdnm.outdated).then(outdated => {
       // Print outdated dependencies
       Object.keys(outdated).forEach(name => {
         const version = outdated[name][0]
@@ -42,31 +35,23 @@ program
       // Set erroring exit code if dependencies are outdated
       if (Object.keys(outdated).length) process.exit(1)
     }).catch(console.error)
-  )
-
-program
-  .command('package [path]')
-  .description('write package.json file for CDN dependencies in HTML file or stdin')
-  .action(path =>
-    readHtml(path).then(html => {
+  })
+  .command('package [path]', 'write package.json file for CDN dependencies', noop, argv => {
+    readHtml(argv.path).then(html => {
       const pkg = JSON.stringify(cdnm.package(html), null, 2)
 
       return fs.writeFile('package.json', pkg)
     }).catch(console.error)
-  )
-
-program
-  .command('update [path]')
-  .description('update CDN dependencies in HTML file or stdin')
-  .action(path =>
-    readHtml(path).then(html =>
+  })
+  .command('update [path]', 'update CDN dependencies', noop, argv => {
+    readHtml(argv.path).then(html =>
       cdnm.update(html).then(newHtml => {
         if (newHtml !== html) {
           const dependencies = cdnm.list(html)
           const newDependencies = cdnm.list(newHtml)
 
           // Print updated dependencies
-          if (path) {
+          if (argv.path) {
             Object.keys(dependencies).forEach(name => {
               const version = dependencies[name]
               const newVersion = newDependencies[name]
@@ -74,17 +59,10 @@ program
             })
           }
 
-          return path ? fs.writeFile(path, newHtml) : process.stdout.write(newHtml)
+          return argv.path ? fs.writeFile(argv.path, newHtml) : process.stdout.write(newHtml)
         }
       })
     ).catch(console.error)
-  )
-
-// Setup and parsing
-program
-  .description(pkg.description)
-  .version(pkg.version)
-  .parse(process.argv)
-
-// Display help when no command is given
-program.args.length || program.help()
+  })
+  .demandCommand()
+  .argv
