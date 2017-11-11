@@ -48,22 +48,15 @@ CDNs](https://github.com/nickmccurdy/cdnm/issues/4) are planned.
 
 ## Help
 ```
+cdnm <command> [path]
 
-  Usage: cdnm [options] [command]
+Commands:
+  cdnm list [path]      list dependencies
+  cdnm outdated [path]  list outdated dependencies
+  cdnm package [path]   write package.json file for dependencies
+  cdnm update [path]    update dependencies
 
-  CDN Manager: Manage dependencies through CDN URLs in HTML files.
-
-
-  Options:
-
-    -V, --version  output the version number
-    -h, --help     output usage information
-
-
-  Commands:
-
-    list [path]      list dependencies
-    outdated [path]  list outdated dependencies
-    package [path]   write package.json file for dependencies
-    update [path]    update dependencies
+Options:
+  --help     Show help                                                 [boolean]
+  --version  Show version number                                       [boolean]
 ```
