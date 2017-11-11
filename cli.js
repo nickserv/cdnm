@@ -15,7 +15,7 @@ yargs
   .usage('$0 <command> [path]')
   .command({
     command: 'list [path]',
-    desc: 'list CDN dependencies',
+    desc: 'list dependencies',
     handler: argv => {
       readHtml(argv.path).then(cdnm.list).then(dependencies => {
         // Print dependencies
@@ -28,7 +28,7 @@ yargs
   })
   .command({
     command: 'outdated [path]',
-    desc: 'list outdated CDN dependencies in HTML file or stdin',
+    desc: 'list outdated dependencies',
     handler: argv => {
       readHtml(argv.path).then(cdnm.outdated).then(outdated => {
         // Print outdated dependencies
@@ -45,7 +45,7 @@ yargs
   })
   .command({
     command: 'package [path]',
-    desc: 'write package.json file for CDN dependencies',
+    desc: 'write package.json file for dependencies',
     handler: argv => {
       readHtml(argv.path).then(html => {
         const pkg = JSON.stringify(cdnm.package(html), null, 2)
@@ -56,7 +56,7 @@ yargs
   })
   .command({
     command: 'update [path]',
-    desc: 'update CDN dependencies',
+    desc: 'update dependencies',
     handler: argv => {
       readHtml(argv.path).then(html =>
         cdnm.update(html).then(newHtml => {
