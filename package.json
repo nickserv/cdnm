@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/nickmccurdy/cdnm#readme",
   "dependencies": {
-    "commander": "^2.11.0",
     "get-stdin": "^5.0.1",
+    "neodoc": "^1.4.0",
     "npm-check-updates": "^2.13.0",
     "pify": "^3.0.0"
   },
