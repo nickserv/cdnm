@@ -23,7 +23,7 @@ exports.list = html =>
       const name = dependency[0]
       const version = dependency[1] || ''
 
-      if (name in memo) throw new Error(`cdnm: ${name} must not have multiple versions, found ${memo[name]} and ${version}`)
+      if (name in memo && version !== memo[name]) throw new Error(`cdnm: ${name} must not have multiple versions, found ${memo[name]} and ${version}`)
 
       // Build object from key/value pairs
       return Object.assign({}, memo, { [name]: version })
