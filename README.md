@@ -14,8 +14,7 @@ Currently only npm-based CDNs are supported, though [other
 CDNs](https://github.com/nickmccurdy/cdnm/issues/4) are planned.
 
 - [unpkg](https://unpkg.com)
-- [jsDelivr for npm](https://www.jsdelivr.com/) (GitHub, WordPress, and combine
-  endpoints are unsupported)
+- [jsDelivr for npm](https://www.jsdelivr.com/) (combine endpoint is unsupported)
 
 ## Installation
 1. Install Node 4 or newer.
