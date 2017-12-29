@@ -7,7 +7,7 @@ const ncu = require('npm-check-updates')
    Based on https://github.com/unpkg/unpkg-website/blob/c49efe2de1fa4bd673999d607f0df73b374ba4e7/server/utils/parsePackageURL.js#L3
    TODO: wait until the unpkg project picks an open source license and mention it here
  */
-const urlFormat = 'https?://(unpkg.com|cdn.jsdelivr.net/npm)/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
+const urlFormat = 'https?://(unpkg.com|cdn.jsdelivr.net/npm|bundle.run)/((?:@[^/@]+/)?[^/@]+)(?:@([^/]+))?(/.*)?'
 
 /*
    Returns an HTML String's npm dependencies as an Object of names and versions
