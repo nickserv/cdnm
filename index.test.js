@@ -8,63 +8,71 @@ const version = '2.1.0'
 const newVersion = '2.1.1'
 const replaceVersion = string => string.replace(RegExp(version, 'g'), newVersion)
 
-describe('list', () => {
-  test('empty string', () => expect(cdnm.list('')).toEqual({}))
-  test('complete html document', () => expect(cdnm.list(html)).toEqual({ [name]: version }))
-  test('jsDelivr', () => expect(cdnm.list(`https://cdn.jsdelivr.net/npm/${name}@${version}/index.js`)).toEqual({ [name]: version }))
-  test('bundle.run', () => expect(cdnm.list(`https://bundle.run/${name}@${version}/index.js`)).toEqual({ [name]: version }))
-  test('tag', () => expect(cdnm.list(`https://unpkg.com/${name}@latest/index.js`)).toEqual({ [name]: 'latest' }))
-  test('star', () => expect(cdnm.list(`https://unpkg.com/${name}@*/index.js`)).toEqual({ [name]: '*' }))
-  test('without version', () => expect(cdnm.list(`https://unpkg.com/${name}/index.js`)).toEqual({ [name]: '' }))
-  test('multiple files', () => expect(cdnm.list(`https://unpkg.com/${name}@${version}/1.js\nhttps://unpkg.com/${name}@${version}/2.js`)).toEqual({ [name]: version }))
-  test('multiple versions', () => expect(() => cdnm.list(`https://unpkg.com/${name}@${version}/index.js\nhttps://unpkg.com/${name}@${newVersion}/index.js`)).toThrow(`cdnm: ${name} must not have multiple versions, found ${version} and ${newVersion}`))
+test('list', () => {
+  [
+    ['', {}],
+    [html, { [name]: version }],
+    [`https://cdn.jsdelivr.net/npm/${name}@${version}/index.js`, { [name]: version }],
+    [`https://bundle.run/${name}@${version}/index.js`, { [name]: version }],
+    [`https://unpkg.com/${name}@latest/index.js`, { [name]: 'latest' }],
+    [`https://unpkg.com/${name}@*/index.js`, { [name]: '*' }],
+    [`https://unpkg.com/${name}/index.js`, { [name]: '' }],
+    [`https://unpkg.com/${name}@${version}/1.js\nhttps://unpkg.com/${name}@${version}/2.js`, { [name]: version }],
+    [`https://unpkg.com/${name}@${version}/index.js\nhttps://unpkg.com/${name}@${newVersion}/index.js`, new Error(`cdnm: ${name} must not have multiple versions, found ${version} and ${newVersion}`)]
+  ].forEach(([html, dependencies]) => {
+    if (dependencies instanceof Error) {
+      expect(() => cdnm.list(html)).toThrow(dependencies)
+    } else {
+      expect(cdnm.list(html)).toEqual(dependencies)
+    }
+  })
 })
 
-describe('outdated', () => {
-  test('empty string', () => expect(cdnm.outdated('')).resolves.toEqual({}))
-  test('up to date html document', () => expect(cdnm.outdated(replaceVersion(html))).resolves.toEqual({}))
-  test('outdated html document', () => expect(cdnm.outdated(html)).resolves.toEqual({ [name]: [version, newVersion] }))
-})
-
-describe('package', () => {
-  test('empty string', () =>
-    expect(cdnm.package('')).toEqual({
-      private: true,
-      dependencies: {}
-    })
-  )
-
-  test('complete html document', () =>
-    expect(cdnm.package(html)).toEqual({
-      private: true,
-      dependencies: {
-        [name]: version
-      }
-    })
+test('outdated', () => {
+  [
+    ['', {}],
+    [replaceVersion(html), {}],
+    [html, { [name]: [version, newVersion] }]
+  ].forEach(([html, dependencies]) =>
+    expect(cdnm.outdated(html)).resolves.toEqual(dependencies)
   )
 })
 
-describe('update', () => {
-  const expectToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(replaceVersion(url))
-  const expectNotToUpdate = url => () => expect(cdnm.update(url)).resolves.toBe(url)
+test('package', () => {
+  [
+    ['', {}],
+    [html, { [name]: version }]
+  ].forEach(([html, dependencies]) =>
+    expect(cdnm.package(html)).toEqual({ private: true, dependencies })
+  )
+})
 
-  test('empty string', expectNotToUpdate(''))
-  test('complete html document', expectToUpdate(html))
-  test('jsDelivr', expectToUpdate(`https://cdn.jsdelivr.net/npm/${name}@${version}/index.js`))
-  test('bundle.run', expectToUpdate(`https://bundle.run/${name}@${version}/index.js`))
-  test('fixed version', expectToUpdate(`https://unpkg.com/${name}@${version}/index.js`))
-  test('latest version', expectNotToUpdate(`https://unpkg.com/${name}@${newVersion}/index.js`))
-  test('semver range', expectNotToUpdate(`https://unpkg.com/${name}@^${newVersion}/index.js`))
-  test('tag', expectNotToUpdate(`https://unpkg.com/${name}@latest/index.js`))
-  test('star', expectNotToUpdate(`https://unpkg.com/${name}@*/index.js`))
-  test('without version', expectNotToUpdate(`https://unpkg.com/${name}/index.js`))
-  test('multiple files', expectToUpdate(`https://unpkg.com/${name}@${version}/1.js\nhttps://unpkg.com/${name}@${version}/2.js`))
-  test('multiple versions', () => expect(() => cdnm.update(`https://unpkg.com/${name}@${version}/index.js\nhttps://unpkg.com/${name}@${newVersion}/index.js`)).toThrow(`cdnm: ${name} must not have multiple versions, found ${version} and ${newVersion}`))
-  test('without path', expectToUpdate(`https://unpkg.com/${name}@${version}`))
-  test('trailing slash', expectToUpdate(`https://unpkg.com/${name}@${version}/`))
-  test('home page', expectNotToUpdate('https://unpkg.com'))
-  test('query', expectToUpdate(`https://unpkg.com/${name}@${version}/index.js?main=example`))
-  test('absolute href', expectNotToUpdate('https://example.com/index.js'))
-  test('relative href', expectNotToUpdate('index.js'))
-  test('root relative href', expectNotToUpdate('/index.js'))
+test('update', () => {
+  [
+    ['', false],
+    [html, true],
+    [`https://cdn.jsdelivr.net/npm/${name}@${version}/index.js`, true],
+    [`https://bundle.run/${name}@${version}/index.js`, true],
+    [`https://unpkg.com/${name}@${version}/index.js`, true],
+    [`https://unpkg.com/${name}@${newVersion}/index.js`, false],
+    [`https://unpkg.com/${name}@^${newVersion}/index.js`, false],
+    [`https://unpkg.com/${name}@latest/index.js`, false],
+    [`https://unpkg.com/${name}@*/index.js`, false],
+    [`https://unpkg.com/${name}/index.js`, false],
+    [`https://unpkg.com/${name}@${version}/1.js\nhttps://unpkg.com/${name}@${version}/2.js`],
+    [`https://unpkg.com/${name}@${version}/index.js\nhttps://unpkg.com/${name}@${newVersion}/index.js`, new Error(`cdnm: ${name} must not have multiple versions, found ${version} and ${newVersion}`)],
+    [`https://unpkg.com/${name}@${version}`, true],
+    [`https://unpkg.com/${name}@${version}/`, true],
+    ['https://unpkg.com', false],
+    [`https://unpkg.com/${name}@${version}/index.js?main=example`, true],
+    ['https://example.com/index.js', false],
+    ['index.js', false],
+    ['/index.js', false]
+  ].forEach(([html, update]) => {
+    if (update instanceof Error) {
+      expect(() => cdnm.update(html)).toThrow(update)
+    } else {
+      expect(cdnm.update(html)).resolves.toBe(update ? replaceVersion(html) : html)
+    }
+  })
 })
