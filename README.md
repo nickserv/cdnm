@@ -1,6 +1,5 @@
 # cdnm (CDN Manager)
 [![npm version](https://badge.fury.io/js/cdnm.svg)](https://badge.fury.io/js/cdnm)
-[![Build Status](https://travis-ci.org/nickmccurdy/cdnm.svg?branch=master)](https://travis-ci.org/nickmccurdy/cdnm)
 
 Manage dependencies through CDN URLs in HTML files. Makes maintaining
 dependencies in HTML files almost as easy as using a package manager, but
