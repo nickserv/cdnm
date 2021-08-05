@@ -18,33 +18,31 @@
   },
   "homepage": "https://github.com/nickmccurdy/cdnm#readme",
   "dependencies": {
-    "commander": "^2.11.0",
-    "get-stdin": "^5.0.1",
-    "npm-check-updates": "^2.13.0",
-    "pify": "^3.0.0"
+    "commander": "^8.1.0",
+    "get-stdin": "^8.0.0",
+    "npm-check-updates": "^11.8.3",
+    "pify": "^5.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.8.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.2.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "jest": "^21.2.1"
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "jest": "^27.0.6"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=12"
   },
   "eslintConfig": {
     "extends": "standard",
-    "overrides": {
-      "files": "*.test.js",
-      "env": {
-        "jest": true
+    "overrides": [
+      {
+        "files": "*.test.js",
+        "env": {
+          "jest": true
+        }
       }
-    }
-  },
-  "jest": {
-    "testEnvironment": "node"
+    ]
   }
 }

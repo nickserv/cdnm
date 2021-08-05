@@ -17,7 +17,7 @@ CDNs](https://github.com/nickmccurdy/cdnm/issues/4) are planned.
 - [bundle.run](https://bundle.run/)
 
 ## Installation
-1. Install Node 4 or newer.
+1. Install Node 12 or newer.
 2. `npm install --global cdnm`
 
 ## Example
