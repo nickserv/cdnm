@@ -20,8 +20,7 @@
   "dependencies": {
     "commander": "^8.1.0",
     "get-stdin": "^8.0.0",
-    "npm-check-updates": "^11.8.3",
-    "pify": "^5.0.0"
+    "npm-check-updates": "^11.8.3"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

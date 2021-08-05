@@ -3,12 +3,9 @@
 
 const cdnm = require('.')
 const program = require('commander')
-const fsBase = require('fs')
+const fs = require('fs').promises
 const getStdin = require('get-stdin')
 const pkg = require('./package')
-const pify = require('pify')
-
-const fs = pify(fsBase)
 
 const readHtml = path => path ? fs.readFile(path, 'utf8') : getStdin()
 
